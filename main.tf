@@ -1,35 +1,18 @@
-pipeline {
-    agent any
-    environment {
-        // Inject GitHub token from Jenkins credentials
-        TF_VAR_github_token = credentials('GITHUBTOKEN')
+
+terraform {
+  required_providers {
+    linux = {
+      source = "TelkomIndonesia/linux"
+      version = "0.7.0"
     }
-    stages {
-        stage('Clean and Prepare Work Directory') {
-            steps {
-                echo "Cleaning and preparing the work directory..."
-                sh 'rm -rvf /tmp/terraform1920'
-                sh 'mkdir -p /tmp/terraform1920'
-            }
-        }
-        
-        stage('Clone Repository') {
-            steps {
-                echo "Cloning the Terraform repository..."
-                sh 'git clone https://github.com/HarshalST/terraform1 /tmp/terraform1920'
-            }
-        }
-        
-        stage('Terraform Infrastructure Setup') {
-            steps {
-                dir('/tmp/terraform1920') {
-                    echo "Initializing Terraform..."
-                    sh 'terraform init'
-                    
-                    echo "Applying Terraform changes..."
-                    sh 'terraform apply --auto-approve'
-                }
-            }
-        }
-    }
+  }
+}
+
+provider "linux" {
+    host     = "192.168.235.131"
+    port     = 22
+}
+
+resource "linux_file" "unnatifile" {
+    path = "/tmp/testdir"
 }
